@@ -1,0 +1,68 @@
+version: '3.8'
+services:
+  traefik:
+    image: library/traefik:alpine
+    container_name: ispn-traefik
+    networks:
+      - ispan_net
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: >
+      --logLevel=ERROR
+      --api.dashboard
+      --docker
+      --entrypoints="Name:http Address::80"
+      --defaultentrypoints="http"
+    ports:
+      - 80:80
+      - 3000:8080
+  # https://infinispan.org/blog/tags/docker/
+  # >>> https://github.com/infinispan/infinispan-images/blob/master/README.md
+  #https://medium.com/prodevans-keycloak/running-multiple-replicas-of-keycloak-on-a-kubernetes-cloud-cacf3b0baeae
+  #https://github.com/infinispan/infinispan-images
+  infinispan:
+#    image: quay.io/infinispan/server:13.0
+#    image: quay.io/infinispan/server-native:14.0 > fails ISPN000660: DefaultCacheManager start failed,  Unable to start JGroups Channel
+    build:
+      context: ./infinispan
+      dockerfile: Dockerfile
+      args:
+        INFINISPAN_VERSION: ${INFINISPAN_VERSION:-13.0.5.Final-2}
+    networks:
+      - ispan_net
+    ports:
+      - 11222:11222
+    volumes:
+      # relative paths needs to be relative to the docker-compose cwd.
+      - ./infinispan/conf/infinispan-keycloak.xml:/opt/infinispan/server/conf/infinispan-keycloak.xml:z
+      - ./ispn/data/:/opt/infinispan/server/mydata:z
+    environment:
+      - USER=user
+      - PASS=pass
+      #IDENTITIES_PATH="/user-config/identities.yaml"
+      #CONFIG_PATH="/user-config/config.yaml"
+  db:
+    image: mysql/mysql-server:${DB_VERSION:-5.7.34}
+    container_name: ispn-db
+    restart: always
+    ports:
+      - "3307:3306"
+    #For dumping purpouses
+    volumes:
+      - ./kc/exports:/vinl/exports
+    environment:
+      - MYSQL_DATABASE=${DB_DATABASE:-keycloak}
+      - MYSQL_USER=${DB_USER:-keycloak}
+      - MYSQL_PASSWORD=${DB_PASS:-password}
+      - MYSQL_ROOT_PASSWORD=${DB_ROOTPASS:-root_password}
+      #- MYSQL_ROOT_PASSWORD=root
+      - MYSQL_HOST=localhost
+    networks:
+      - ispan_net
+    healthcheck:
+      test: "mysqladmin ping -u root -p$${MYSQL_ROOT_PASSWORD}"
+      start_period: 10s
+networks:
+  ispan_net:
+    name: ispan_network
+    driver: bridge
