@@ -16,6 +16,45 @@ services:
 #    ports:
 #      - 80:80
 #      - 3000:8080
+  keycloak:
+    image: quay.io/keycloak/keycloak:17.0.0-legacy
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql
+      - infinispan
+    networks:
+      - ispan_net
+    volumes:
+#      - ./startup.cli:/opt/jboss/startup-scripts/startup.cli
+#      - ./js-console.war:/opt/jboss/keycloak/standalone/deployments/js-console.war:z
+      - ./keycloak/realm.json:/realm.json
+    environment:
+      INFINISPAN_HOST: "infinispan"
+      INFINISPAN_PORT: 11222
+      JAVA_OPTS_APPEND: ${KEYCLOAK_JVM_MEMORY:--Xms64m -Xmx2g -XX:MetaspaceSize=96M -XX:MaxMetaspaceSize=256m} -Djava.net.preferIPv4Stack=true -Djboss.modules.system.pkgs=org.jboss.byteman -Djava.awt.headless=true
+      DB_VENDOR: mysql
+      DB_ADDR: mysql
+      DB_USER: keycloak
+      DB_PASSWORD: password
+      DB_DATABASE: keycloak
+      DB_SCHEMA: public
+      JDBC_PARAMS: useSSL=false
+      #JSTAT: "${KEYCLOAK_JSTAT:-false}"
+      HTTP_MAX_CONNECTIONS: ${KEYCLOAK_HTTP_MAX_CONNECTIONS:-50000}
+      AJP_MAX_CONNECTIONS: ${KEYCLOAK_AJP_MAX_CONNECTIONS:-50000}
+      WORKER_IO_THREADS: ${KEYCLOAK_WORKER_IO_THREADS:-2}
+      WORKER_TASK_MAX_THREADS: ${KEYCLOAK_WORKER_TASK_MAX_THREADS:-16}
+      DS_MIN_POOL_SIZE: ${KEYCLOAK_DS_MIN_POOL_SIZE:-10}
+      DS_MAX_POOL_SIZE: ${KEYCLOAK_DS_MAX_POOL_SIZE:-100}
+      DS_POOL_PREFILL: "${KEYCLOAK_DS_POOL_PREFILL:-true}"
+      DS_PS_CACHE_SIZE: ${KEYCLOAK_DS_PS_CACHE_SIZE:-100}
+      JGROUPS_DISCOVERY_PROTOCOL: JDBC_PING
+      #JGROUPS_DISCOVERY_PROPERTIES: datasource_jndi_name=java:jboss/datasources/KeycloakDS,info_writer_sleep_time=500"
+      CACHE_OWNERS_COUNT: 2
+      KEYCLOAK_USER: ${KEYCLOAK_ADMIN_USER:-admin}
+      KEYCLOAK_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-admin}
+      KEYCLOAK_IMPORT: /realm.json
   # https://infinispan.org/blog/tags/docker/
   # >>> https://github.com/infinispan/infinispan-images/blob/master/README.md
   #https://medium.com/prodevans-keycloak/running-multiple-replicas-of-keycloak-on-a-kubernetes-cloud-cacf3b0baeae
@@ -32,16 +71,21 @@ services:
       - ispan_net
     ports:
       - 11222:11222
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -k https://$$(ip route get 1.2.3.4 | awk '{print $$7}'):11222" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     volumes:
       # relative paths needs to be relative to the docker-compose cwd.
-      - ./infinispan/conf/infinispan-keycloak.xml:/opt/infinispan/server/conf/infinispan-keycloak.xml:z
+      #- ./infinispan/conf/infinispan-keycloak.xml:/opt/infinispan/server/conf/infinispan-keycloak.xml:z
       - ./data/infinispan-1:/opt/infinispan/server/mydata:z
     environment:
       - USER=user
       - PASS=pass
       #IDENTITIES_PATH="/user-config/identities.yaml"
       #CONFIG_PATH="/user-config/config.yaml"
-  db:
+  mysql:
     image: mysql/mysql-server:${DB_VERSION:-5.7.34}
     container_name: ispn-db
     restart: always
@@ -49,13 +93,12 @@ services:
       - "3307:3306"
     #For dumping purpouses
     volumes:
-      - ./kc/exports:/vinl/exports
+      - ./data:/custom/exports
     environment:
       - MYSQL_DATABASE=${DB_DATABASE:-keycloak}
       - MYSQL_USER=${DB_USER:-keycloak}
       - MYSQL_PASSWORD=${DB_PASS:-password}
       - MYSQL_ROOT_PASSWORD=${DB_ROOTPASS:-root_password}
-      #- MYSQL_ROOT_PASSWORD=root
       - MYSQL_HOST=localhost
     networks:
       - ispan_net

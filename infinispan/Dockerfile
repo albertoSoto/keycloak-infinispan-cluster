@@ -1,5 +1,6 @@
 ARG INFINISPAN_VERSION
 FROM quay.io/infinispan/server:${INFINISPAN_VERSION:-13.0.5.Final-2}
+COPY ./conf/infinispan-keycloak.xml /opt/infinispan/server/conf/infinispan-keycloak.xml
 #USER 0
 #RUN true \
 #  && microdnf clean all \
