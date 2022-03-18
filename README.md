@@ -1,0 +1,1 @@
+# keycloak-infinispan-cluster
