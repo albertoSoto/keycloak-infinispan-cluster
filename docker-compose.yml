@@ -1,28 +1,28 @@
 version: '3.8'
 services:
-  traefik:
-    image: library/traefik:alpine
-    container_name: ispn-traefik
-    networks:
-      - ispan_net
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    command: >
-      --logLevel=ERROR
-      --api.dashboard
-      --docker
-      --entrypoints="Name:http Address::80"
-      --defaultentrypoints="http"
-    ports:
-      - 80:80
-      - 3000:8080
+#  traefik:
+#    image: library/traefik:alpine
+#    container_name: ispn-traefik
+#    networks:
+#      - ispan_net
+#    volumes:
+#      - /var/run/docker.sock:/var/run/docker.sock
+#    command: >
+#      --logLevel=ERROR
+#      --api.dashboard
+#      --docker
+#      --entrypoints="Name:http Address::80"
+#      --defaultentrypoints="http"
+#    ports:
+#      - 80:80
+#      - 3000:8080
   # https://infinispan.org/blog/tags/docker/
   # >>> https://github.com/infinispan/infinispan-images/blob/master/README.md
   #https://medium.com/prodevans-keycloak/running-multiple-replicas-of-keycloak-on-a-kubernetes-cloud-cacf3b0baeae
   #https://github.com/infinispan/infinispan-images
   infinispan:
-#    image: quay.io/infinispan/server:13.0
 #    image: quay.io/infinispan/server-native:14.0 > fails ISPN000660: DefaultCacheManager start failed,  Unable to start JGroups Channel
+#    image: quay.io/infinispan/server:13.0.5.Final-2
     build:
       context: ./infinispan
       dockerfile: Dockerfile
@@ -35,7 +35,7 @@ services:
     volumes:
       # relative paths needs to be relative to the docker-compose cwd.
       - ./infinispan/conf/infinispan-keycloak.xml:/opt/infinispan/server/conf/infinispan-keycloak.xml:z
-      - ./ispn/data/:/opt/infinispan/server/mydata:z
+      - ./data/infinispan-1:/opt/infinispan/server/mydata:z
     environment:
       - USER=user
       - PASS=pass
