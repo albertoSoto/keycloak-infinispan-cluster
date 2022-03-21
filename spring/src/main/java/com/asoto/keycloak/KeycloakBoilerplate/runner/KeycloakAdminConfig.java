@@ -1,4 +1,4 @@
-package com.asoto.keycloak.runner;
+package com.asoto.keycloak.KeycloakBoilerplate.runner;
 
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;

@@ -1,4 +1,4 @@
-package com.asoto.keycloak.config;
+package com.asoto.keycloak.KeycloakBoilerplate.config;
 
 import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.error.ErrorAttributeOptions.Include;

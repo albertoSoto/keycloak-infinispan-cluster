@@ -1,4 +1,4 @@
-package com.asoto.keycloak.security;
+package com.asoto.keycloak.KeycloakBoilerplate.security;
 
 import org.keycloak.adapters.springboot.KeycloakSpringBootConfigResolver;
 import org.keycloak.adapters.springsecurity.KeycloakConfiguration;
@@ -44,11 +44,10 @@ public class WebSecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         super.configure(http);
         http.authorizeRequests()
-                .antMatchers(HttpMethod.GET, "/api/movies", "/api/movies/**", "/actuator/**").permitAll()
-                .antMatchers("/api/movies/**/comments").hasAnyRole(ROL_MANAGER, USER)
-                .antMatchers("/api/movies", "/api/movies/**").hasRole(ROL_MANAGER)
+                .antMatchers(HttpMethod.GET, "/api/**", "/actuator/**").permitAll()
                 .antMatchers("/api/userextras/me").hasAnyRole(ROL_MANAGER, USER)
                 .antMatchers(HttpMethod.GET, "/actuator/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/").permitAll()
                 .antMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs", "/v3/api-docs/**").permitAll()
                 .anyRequest().authenticated();
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);

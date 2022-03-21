@@ -1,4 +1,4 @@
-package com.asoto.keycloak.controller;
+package com.asoto.keycloak.KeycloakBoilerplate.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

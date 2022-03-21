@@ -1,6 +1,6 @@
-package com.asoto.keycloak.runner;
+package com.asoto.keycloak.KeycloakBoilerplate.runner;
 
-import com.asoto.keycloak.security.WebSecurityConfig;
+import com.asoto.keycloak.KeycloakBoilerplate.security.WebSecurityConfig;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;

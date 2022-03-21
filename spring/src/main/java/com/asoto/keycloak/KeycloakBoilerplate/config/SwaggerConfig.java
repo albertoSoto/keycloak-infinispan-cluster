@@ -1,4 +1,4 @@
-package com.asoto.keycloak.config;
+package com.asoto.keycloak.KeycloakBoilerplate.config;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;

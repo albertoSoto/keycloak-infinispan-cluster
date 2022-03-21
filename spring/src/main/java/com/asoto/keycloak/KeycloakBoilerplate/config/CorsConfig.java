@@ -1,4 +1,4 @@
-package com.asoto.keycloak.config;
+package com.asoto.keycloak.KeycloakBoilerplate.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

@@ -1,21 +1,21 @@
 version: '3.8'
 services:
-#  traefik:
-#    image: library/traefik:alpine
-#    container_name: ispn-traefik
-#    networks:
-#      - ispan_net
-#    volumes:
-#      - /var/run/docker.sock:/var/run/docker.sock
-#    command: >
-#      --logLevel=ERROR
-#      --api.dashboard
-#      --docker
-#      --entrypoints="Name:http Address::80"
-#      --defaultentrypoints="http"
-#    ports:
-#      - 80:80
-#      - 3000:8080
+  traefik:
+    image: library/traefik:alpine
+    container_name: ispn-traefik
+    networks:
+      - ispan_net
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: >
+      --logLevel=ERROR
+      --api.dashboard
+      --docker
+      --entrypoints="Name:http Address::80"
+      --defaultentrypoints="http"
+    ports:
+      - 80:80
+      - 3001:8080
   keycloak:
     image: quay.io/keycloak/keycloak:17.0.0-legacy
     ports:
@@ -27,7 +27,6 @@ services:
       - ispan_net
     volumes:
 #      - ./startup.cli:/opt/jboss/startup-scripts/startup.cli
-#      - ./js-console.war:/opt/jboss/keycloak/standalone/deployments/js-console.war:z
       - ./keycloak/realm.json:/realm.json
     environment:
       INFINISPAN_HOST: "infinispan"
