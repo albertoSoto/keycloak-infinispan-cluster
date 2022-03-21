@@ -1,0 +1,38 @@
+# Development properties (also used for docker-compose)
+server:
+  port: ${SPRINGBOOT_PORT:8081}
+spring:
+#  https://stackoverflow.com/questions/70073748/i-cant-update-my-webapp-to-spring-boot-2-6-0-2-5-7-works-but-2-6-0-doesnt
+  main:
+    allow-circular-references: true
+  config:
+    import: optional:file:.env[.properties]
+  application:
+    name: test-api
+  freemarker:
+    template-loader-path: classpath:/templates
+    suffix: .ftl
+app:
+  cors:
+    allowed-origins: http://localhost:3000
+management:
+  endpoints:
+    web:
+      exposure.include: beans, env, health, info, metrics, mappings
+  endpoint:
+    health:
+      show-details: always
+
+keycloak:
+  auth-server-url: http://${KEYCLOAK_HOST:localhost}:${KEYCLOAK_PORT:8080}${KEYCLOAK_SUB_PATH:/auth}
+  realm: app-services
+  resource: example-app
+  ssl-required: external
+  principal-attribute: preferred_username
+  use-resource-role-mappings: true
+
+springdoc:
+  show-actuator: true
+  swagger-ui:
+    groups-order: DESC
+    disable-swagger-default-url: true
