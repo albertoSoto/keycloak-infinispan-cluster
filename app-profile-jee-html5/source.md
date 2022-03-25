@@ -1,0 +1,1 @@
+https://github.com/keycloak/keycloak-quickstarts/tree/latest/app-profile-jee-html5
