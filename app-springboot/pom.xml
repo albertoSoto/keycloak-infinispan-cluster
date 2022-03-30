@@ -12,7 +12,9 @@
     <name>Spring Boot Keycloak Sample</name>
     <description>Spring Boot Keycloak Sample</description>
     <properties>
-        <springboot-version>2.0.3.RELEASE</springboot-version>
+        <maven.compiler.source>16</maven.compiler.source>
+        <maven.compiler.target>16</maven.compiler.target>
+        <springboot-version>2.6.5</springboot-version>
         <httpclient.version>4.5.3</httpclient.version>
         <spring-mvc-cache-control.version>1.1.1-RELEASE</spring-mvc-cache-control.version>
         <spring-boot-starter-security.version>1.4.2.RELEASE</spring-boot-starter-security.version>
@@ -29,6 +31,11 @@
         </dependencies>
     </dependencyManagement>
     <dependencies>
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>2.0.1.Final</version>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
@@ -61,6 +68,11 @@
             <artifactId>spring-mvc-cache-control</artifactId>
             <version>${spring-mvc-cache-control.version}</version>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
         </dependency>
         <!-- test -->
         <dependency>

@@ -11,7 +11,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.keycloak.test.FluentTestsHelper;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.validation.constraints.NotNull;
@@ -22,15 +24,17 @@ import java.io.IOException;
  */
 
 @RunWith(SpringRunner.class)
+//@EnableConfigurationProperties
+//@TestPropertySource(locations = "classpath:application-test.properties")
 @SpringBootTest(webEnvironment= SpringBootTest.WebEnvironment.DEFINED_PORT, classes = {ProductApplication.class})
 public class ProductAppTest {
-    @NotNull
-    @Value("${keycloak.auth-server-url}")
-    private static String KEYCLOAK_URL;
+//    @NotNull
+//    @Value("${keycloak.auth-server-url}")
+    private static String KEYCLOAK_URL = "http://localhost:8080/auth";
 
-    @NotNull
-    @Value("${product.service.url}")
-    private static String SECURED_URL;
+//    @NotNull
+//    @Value("${product.service.url}")
+    private static String SECURED_URL= "http://localhost:8081/products";
 
     private WebClient webClient = new WebClient(BrowserVersion.CHROME);
     private static FluentTestsHelper testsHelper;
