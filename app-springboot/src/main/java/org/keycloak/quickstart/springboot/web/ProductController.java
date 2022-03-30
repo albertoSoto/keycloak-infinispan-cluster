@@ -47,10 +47,14 @@ public class ProductController {
     @Value("${product.service.url}")
     private String endpoint;
 
-    @Autowired
-    private ProductService productService;
+    private final ProductService productService;
 
-    private @Autowired HttpServletRequest request;
+    private final HttpServletRequest request;
+
+    public ProductController(ProductService productService, HttpServletRequest request) {
+        this.productService = productService;
+        this.request = request;
+    }
 
     @RequestMapping(value = "/products", method = RequestMethod.GET)
     public String handleCustomersRequest(Principal principal, Model model) {
