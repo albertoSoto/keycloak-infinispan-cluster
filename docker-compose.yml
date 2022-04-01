@@ -26,9 +26,8 @@ services:
     networks:
       - ispan_net
     volumes:
-#      - ./startup.cli:/opt/jboss/startup-scripts/startup.cli
-#      - ./keycloak/realm.json:/realm.json
-      - ./keycloak/development-realm/vi-realm-zero-realm.json:/realm.json
+      - ./keycloak/realm.json:/realm.json
+      #      - ./keycloak/development-realm/vi-realm-zero-realm.json:/realm.json
       - ./keycloak/password-blacklists/password_blacklist.txt:/opt/jboss/keycloak/standalone/data/password-blacklists/password-blacklists.txt
       - ./keycloak/cli/startup.cli:/opt/jboss/startup-scripts/startup.cli
     environment:
