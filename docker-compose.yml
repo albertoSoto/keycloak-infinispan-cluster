@@ -58,7 +58,6 @@ services:
       KEYCLOAK_USER: ${KEYCLOAK_ADMIN_USER:-admin}
       KEYCLOAK_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-admin}
       KEYCLOAK_IMPORT: /realm.json
-  #    KEYCLOAK_IMPORT: /import/vi-realm.json
   infinispan:
 #    image: quay.io/infinispan/server-native:14.0 > fails ISPN000660: DefaultCacheManager start failed,  Unable to start JGroups Channel
 #    image: quay.io/infinispan/server:13.0.5.Final-2

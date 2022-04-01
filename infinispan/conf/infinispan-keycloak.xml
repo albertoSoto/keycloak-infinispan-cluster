@@ -10,24 +10,87 @@
     </jgroups>
 
     <cache-container name="default" statistics="${env.INFINISPAN_CACHE_STATISTICS:false}">
-        <transport cluster="${infinispan.cluster.name:cluster}" stack="${infinispan.cluster.stack:jgroups}" node-name="${infinispan.node.name:}"/>
-        <replicated-cache-configuration name="sessions-cfg" mode="SYNC" start="EAGER" statistics="${env.INFINISPAN_CACHE_STATISTICS:false}">
-
-            <state-transfer timeout="${infinispan.statetransfer.timeout:600000}" />
-
-            <encoding>
-                <key media-type="application/x-jboss-marshalling"/>
-                <value media-type="application/x-jboss-marshalling"/>
-            </encoding>
+        <!--    <serialization marshaller="org.infinispan.commons.marshall.JavaSerializationMarshaller">...is not for KC -->
+        <!--Caused by: java.lang.ClassNotFoundException: org.keycloak.models.sessions.infinispan.changes.SessionEntityWrapper-->
+        <serialization marshaller="org.infinispan.jboss.marshalling.commons.GenericJBossMarshaller">>
+            <allow-list>
+                <!-- it can´t find the class from KC -->
+             <!--   <class>org.keycloak.models.sessions.infinispan.changes.SessionEntityWrapper</class>-->
+                <regex>org.keycloak.models.sessions.infinispan.*</regex>
+            </allow-list>
+        </serialization>
+        <transport cluster="${infinispan.cluster.name:cluster}" stack="${infinispan.cluster.stack:jgroups}"
+                   node-name="${infinispan.node.name:}"/>
+        <!--        <security>
+                    <authorization/>
+                </security>-->
+        <replicated-cache-configuration name="sessions-cfg" mode="SYNC" start="EAGER"
+                                        statistics="${env.INFINISPAN_CACHE_STATISTICS:false}">
+            <state-transfer timeout="${infinispan.statetransfer.timeout:600000}"/>
+            <!--https://infinispan.org/docs/stable/titles/encoding/encoding.html#marshalled-object-encoding_storage-formats
+            Options can be:
+            application/x-protostream
+            application/x-jboss-marshalling < This is the one used by kc, shown on startup
+            application/x-java-serialized-object-->
+            <encoding media-type="application/x-jboss-marshalling"/>
             <expiration lifespan="900000000000000000"/>
-
         </replicated-cache-configuration>
-
-        <replicated-cache name="sessions" configuration="sessions-cfg" />
-        <replicated-cache name="clientSessions" configuration="sessions-cfg" />
-        <replicated-cache name="authenticationSessions" configuration="sessions-cfg" />
+        <distributed-cache-configuration name="distributed-cache-cfg">
+            <encoding media-type="application/x-jboss-marshalling"/>
+            <!-- Alternative way: -->
+            <!--
+            <encoding>
+                <key media-type="application/x-java-serialized-object"/>
+                <value media-type="application/x-java-serialized-object"/>
+            </encoding>
+            -->
+            <expiration lifespan="900000000000000000"/>
+        </distributed-cache-configuration>
+        <!--https://infinispan.org/docs/stable/titles/configuring/configuring.html#replicated-caches_clustered-caches-->
+        <replicated-cache name="sessions" configuration="sessions-cfg">
+          <!--  <persistence passivation="true">
+                <file-store preload="true" purge="false" fetch-state="false" path="../mydata/sessions">
+                </file-store>
+            </persistence>-->
+        </replicated-cache>
+        <replicated-cache name="clientSessions" configuration="sessions-cfg">
+          <!--  <persistence passivation="true">
+                <file-store preload="true" purge="false" fetch-state="false" path="../mydata/clientSessions">
+                </file-store>
+            </persistence>-->
+        </replicated-cache>
+        <replicated-cache name="authenticationSessions" configuration="sessions-cfg">
+          <!--  <persistence passivation="true">
+                <file-store preload="true" purge="false" fetch-state="false" path="../mydata/authenticationSessions">
+                </file-store>
+            </persistence>-->
+        </replicated-cache>
+        <!--https://infinispan.org/docs/stable/titles/configuring/configuring.html#distributed-caches_clustered-caches-->
+        <!--Passivation
+        Passivation configures Infinispan to write entries to cache stores when it evicts those entries from memory.
+         In this way, passivation ensures that only a single copy of an entry is maintained, either in-memory or in a
+         cache store, which prevents unnecessary and potentially expensive writes to persistent storage.-->
+        <!--https://infinispan.org/docs/stable/titles/configuring/configuring.html#configuring-jdbc-cache-stores_persistence-->
+       <!-- <distributed-cache name="sessions" owners="2" configuration="distributed-cache-cfg">
+            <persistence passivation="true">
+                &lt;!&ndash; purge="false" fetch-state="false" see:  https://infinispan.org/docs/stable/titles/configuring/configuring.html#configuring_cache_stores-persistence&ndash;&gt;
+                <file-store preload="true" purge="false" fetch-state="false" path="../mydata/sessions">
+                </file-store>
+            </persistence>
+        </distributed-cache>
+        <distributed-cache name="clientSessions" owners="2" configuration="distributed-cache-cfg">
+            <persistence passivation="true">
+                <file-store preload="true" purge="false" fetch-state="false" path="../mydata/clientSessions">
+                </file-store>
+            </persistence>
+        </distributed-cache>
+        <distributed-cache name="authenticationSessions" owners="2" configuration="distributed-cache-cfg">
+            <persistence passivation="true">
+                <file-store preload="true" purge="false" fetch-state="false" path="../mydata/authenticationSessions">
+                </file-store>
+            </persistence>
+        </distributed-cache>-->
     </cache-container>
-
 
     <server xmlns="urn:infinispan:server:13.0">
         <interfaces>

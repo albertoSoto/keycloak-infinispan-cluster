@@ -41,3 +41,10 @@ https://infinispan.org/docs/stable/titles/configuring/configuring.html#jdbc_cach
 
 https://github.com/olivierboudet/keycloak-infinispan-jdbc
 
+## Infinispan server tutorial
+
+https://infinispan.org/infinispan-server-tutorial/#_running_the_server_distribution
+https://infinispan.org/infinispan-server-tutorial/
+https://github.com/infinispan/infinispan-server-tutorial
+https://github.com/infinispan/infinispan-simple-tutorials
+https://kazuhira-r.hatenablog.com/entry/2021/07/11/000438
