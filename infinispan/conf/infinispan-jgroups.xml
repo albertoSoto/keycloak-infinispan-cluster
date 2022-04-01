@@ -1,8 +1,7 @@
 <config>
     <UDP
-       bind_addr="match-interface:eth0,match-interface:en0,site_local,loopback"
+            bind_addr="match-interface:eth0,match-interface:en0,site_local,loopback"
     />
-
     <PING />
     <MERGE3 max_interval="30000" min_interval="10000"/>
     <FD_SOCK/>

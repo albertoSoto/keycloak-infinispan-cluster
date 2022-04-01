@@ -27,12 +27,15 @@ import org.springframework.stereotype.Component;
 @Component
 public class ProductService {
 
-    @Autowired
-    private KeycloakRestTemplate template;
+    private final KeycloakRestTemplate template;
 
     @NotNull
     @Value("${product.service.url}")
     private String endpoint;
+
+    public ProductService(KeycloakRestTemplate template) {
+        this.template = template;
+    }
 
     public List<String> getProducts() {
         ResponseEntity<String[]> response = template.getForEntity(endpoint, String[].class);

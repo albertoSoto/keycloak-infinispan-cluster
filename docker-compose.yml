@@ -19,7 +19,7 @@ services:
   keycloak:
     image: quay.io/keycloak/keycloak:17.0.0-legacy
     ports:
-      - "8080:8080"
+      - "8180:8080"
     depends_on:
       - mysql
       - infinispan
@@ -27,7 +27,10 @@ services:
       - ispan_net
     volumes:
 #      - ./startup.cli:/opt/jboss/startup-scripts/startup.cli
-      - ./keycloak/realm.json:/realm.json
+#      - ./keycloak/realm.json:/realm.json
+      - ./keycloak/development-realm/vi-realm-zero-realm.json:/realm.json
+      - ./keycloak/password-blacklists/password_blacklist.txt:/opt/jboss/keycloak/standalone/data/password-blacklists/password-blacklists.txt
+      - ./keycloak/cli/startup.cli:/opt/jboss/startup-scripts/startup.cli
     environment:
       INFINISPAN_HOST: "infinispan"
       INFINISPAN_PORT: 11222
@@ -49,15 +52,13 @@ services:
       DS_POOL_PREFILL: "${KEYCLOAK_DS_POOL_PREFILL:-true}"
       DS_PS_CACHE_SIZE: ${KEYCLOAK_DS_PS_CACHE_SIZE:-100}
       JGROUPS_DISCOVERY_PROTOCOL: JDBC_PING
-      #JGROUPS_DISCOVERY_PROPERTIES: datasource_jndi_name=java:jboss/datasources/KeycloakDS,info_writer_sleep_time=500"
+      JGROUPS_DISCOVERY_PROPERTIES: datasource_jndi_name=java:jboss/datasources/KeycloakDS,info_writer_sleep_time=500
       CACHE_OWNERS_COUNT: 2
+      CACHE_OWNERS_AUTH_SESSIONS_COUNT: 2
       KEYCLOAK_USER: ${KEYCLOAK_ADMIN_USER:-admin}
       KEYCLOAK_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-admin}
       KEYCLOAK_IMPORT: /realm.json
-  # https://infinispan.org/blog/tags/docker/
-  # >>> https://github.com/infinispan/infinispan-images/blob/master/README.md
-  #https://medium.com/prodevans-keycloak/running-multiple-replicas-of-keycloak-on-a-kubernetes-cloud-cacf3b0baeae
-  #https://github.com/infinispan/infinispan-images
+  #    KEYCLOAK_IMPORT: /import/vi-realm.json
   infinispan:
 #    image: quay.io/infinispan/server-native:14.0 > fails ISPN000660: DefaultCacheManager start failed,  Unable to start JGroups Channel
 #    image: quay.io/infinispan/server:13.0.5.Final-2
@@ -65,7 +66,7 @@ services:
       context: ./infinispan
       dockerfile: Dockerfile
       args:
-        INFINISPAN_VERSION: ${INFINISPAN_VERSION:-13.0.5.Final-2}
+        INFINISPAN_VERSION: ${INFINISPAN_VERSION:-13.0.6.Final}
     networks:
       - ispan_net
     ports:
@@ -76,12 +77,11 @@ services:
       timeout: 5s
       retries: 5
     volumes:
-      # relative paths needs to be relative to the docker-compose cwd.
-      #- ./infinispan/conf/infinispan-keycloak.xml:/opt/infinispan/server/conf/infinispan-keycloak.xml:z
       - ./data/infinispan-1:/opt/infinispan/server/mydata:z
     environment:
-      - USER=user
-      - PASS=pass
+      - INFINISPAN_CACHE_STATISTICS=true
+      - USER=admin
+      - PASS=admin
       #IDENTITIES_PATH="/user-config/identities.yaml"
       #CONFIG_PATH="/user-config/config.yaml"
   mysql:
@@ -90,7 +90,6 @@ services:
     restart: always
     ports:
       - "3307:3306"
-    #For dumping purpouses
     volumes:
       - ./data:/custom/exports
     environment:

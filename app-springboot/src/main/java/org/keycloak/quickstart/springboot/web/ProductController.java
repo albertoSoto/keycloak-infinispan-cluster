@@ -16,29 +16,28 @@
 
 package org.keycloak.quickstart.springboot.web;
 
-import java.security.Principal;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.constraints.NotNull;
-
 import net.rossillo.spring.web.mvc.CacheControl;
 import net.rossillo.spring.web.mvc.CachePolicy;
 import org.keycloak.common.util.KeycloakUriBuilder;
 import org.keycloak.constants.ServiceUrlConstants;
 import org.keycloak.quickstart.springboot.service.ProductService;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.constraints.NotNull;
+import java.security.Principal;
 
 @Controller
 @CacheControl(policy = CachePolicy.NO_CACHE)
 public class ProductController {
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProductController.class);
     @NotNull
     @Value("${keycloak.auth-server-url}")
     private String kcEndpoint;
@@ -62,6 +61,9 @@ public class ProductController {
         model.addAttribute("principal",  principal);
         String logoutUri = KeycloakUriBuilder.fromUri(kcEndpoint).path(ServiceUrlConstants.TOKEN_SERVICE_LOGOUT_PATH)
                 .queryParam("redirect_uri", endpoint).build("quickstart").toString();
+        LOGGER.debug(kcEndpoint);
+        LOGGER.debug(endpoint);
+        LOGGER.debug(logoutUri);
         model.addAttribute("logout",  logoutUri);
         return "products";
     }

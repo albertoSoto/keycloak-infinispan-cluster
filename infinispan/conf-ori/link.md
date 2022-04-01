@@ -1,1 +1,0 @@
-https://github.com/infinispan/infinispan/tree/main/core/src/main/resources/default-configs

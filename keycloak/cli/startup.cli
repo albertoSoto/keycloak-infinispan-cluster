@@ -18,3 +18,9 @@ cd /subsystem=infinispan/cache-container=keycloak
 ./distributed-cache=clientSessions/store=remote:add(cache=clientSessions, fetch-state=false, passivation=false, preload=false, purge=false, remote-servers=["remote-cache"], shared=true, properties={rawValues=true, marshaller=org.keycloak.cluster.infinispan.KeycloakHotRodMarshallerFactory, protocolVersion=3.1})
 #./replicated-cache=clientSessions/store=remote/write=through:remove()
 #./replicated-cache=clientSessions/store=remote/write=behind:add()
+
+./distributed-cache=authenticationSessions:remove()
+./distributed-cache=authenticationSessions:add(statistics-enabled=true)
+./distributed-cache=authenticationSessions/store=remote:add(cache=authenticationSessions, fetch-state=false, passivation=false, preload=false, purge=false, remote-servers=["remote-cache"], shared=true, properties={rawValues=true, marshaller=org.keycloak.cluster.infinispan.KeycloakHotRodMarshallerFactory, protocolVersion=3.1})
+#./replicated-cache=authenticationSessions/store=remote/write=through:remove()
+#./replicated-cache=authenticationSessions/store=remote/write=behind:add()

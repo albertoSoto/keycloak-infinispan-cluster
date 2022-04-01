@@ -37,5 +37,7 @@ https://github.com/thomasdarimont/keycloak-project-example/tree/main/deployments
 https://infinispan.org/docs/stable/titles/configuring/configuring.html#jdbc_cache_store
 
 
+## Inspiration project
 
+https://github.com/olivierboudet/keycloak-infinispan-jdbc
 

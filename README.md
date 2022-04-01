@@ -14,7 +14,7 @@ p:pass
 > Check that all KC cache repositories are created
 
 Keycloak 1, will be available at:
-http://localhost:8080/auth
+http://localhost:8180/auth
 u:admin
 p:admin
 > Check that basic realm is generated (test realm)

@@ -5,107 +5,41 @@
         xmlns="urn:infinispan:config:13.0"
         xmlns:server="urn:infinispan:server:13.0">
 
-    <cache-container name="default" statistics="true">
-        <transport cluster="${infinispan.cluster.name:cluster}" stack="${infinispan.cluster.stack:tcp}" node-name="${infinispan.node.name:}"/>
-        <security>
-            <authorization/>
-        </security>
-        <replicated-cache-configuration name="replicated-cache-cfg" >
+    <jgroups>
+        <stack-file name="jgroups" path="jgroups.xml"/>
+    </jgroups>
+
+    <cache-container name="default" statistics="${env.INFINISPAN_CACHE_STATISTICS:false}">
+        <transport cluster="${infinispan.cluster.name:cluster}" stack="${infinispan.cluster.stack:jgroups}" node-name="${infinispan.node.name:}"/>
+        <replicated-cache-configuration name="sessions-cfg" mode="SYNC" start="EAGER" statistics="${env.INFINISPAN_CACHE_STATISTICS:false}">
+
+            <state-transfer timeout="${infinispan.statetransfer.timeout:600000}" />
+
             <encoding>
                 <key media-type="application/x-jboss-marshalling"/>
                 <value media-type="application/x-jboss-marshalling"/>
             </encoding>
-
             <expiration lifespan="900000000000000000"/>
+
         </replicated-cache-configuration>
 
-        <distributed-cache-configuration name="distributed-cache-cfg">
-            <encoding>
-                <key media-type="application/x-jboss-marshalling"/>
-                <value media-type="application/x-jboss-marshalling"/>
-            </encoding>
-
-            <expiration lifespan="900000000000000000"/>
-        </distributed-cache-configuration>
-
-        <replicated-cache name="work" configuration="replicated-cache-cfg">
-        </replicated-cache>
-
-        <distributed-cache name="sessions" owners="2" configuration="distributed-cache-cfg">
-            <persistence passivation="true">
-                <!-- purge="false" fetch-state="false" see:  https://infinispan.org/docs/stable/titles/configuring/configuring.html#configuring_cache_stores-persistence-->
-                <file-store preload="true" purge="false" fetch-state="false" path="../mydata/sessions">
-                </file-store>
-            </persistence>
-        </distributed-cache>
-
-        <distributed-cache name="authenticationSessions" owners="2" configuration="distributed-cache-cfg">
-        </distributed-cache>
-
-        <distributed-cache name="offlineSessions" owners="2"  configuration="distributed-cache-cfg">
-        </distributed-cache>
-
-        <distributed-cache name="clientSessions" owners="2"  configuration="distributed-cache-cfg">
-        </distributed-cache>
-
-        <distributed-cache name="offlineClientSessions" owners="2" configuration="distributed-cache-cfg">
-        </distributed-cache>
-
-        <distributed-cache name="loginFailures" owners="2" configuration="distributed-cache-cfg">
-        </distributed-cache>
-
-        <distributed-cache name="actionTokens" owners="2" configuration="distributed-cache-cfg">
-            <memory>
-                <!--  <heap-memory size="-1"/> wildfly specific? -->
-                <object/>
-            </memory>
-            <expiration interval="300000" max-idle="-1"/>
-        </distributed-cache>
-
+        <replicated-cache name="sessions" configuration="sessions-cfg" />
+        <replicated-cache name="clientSessions" configuration="sessions-cfg" />
+        <replicated-cache name="authenticationSessions" configuration="sessions-cfg" />
     </cache-container>
+
 
     <server xmlns="urn:infinispan:server:13.0">
         <interfaces>
             <interface name="public">
-                <inet-address value="${infinispan.bind.address:127.0.0.1}"/>
+                <inet-address value="${infinispan.bind.address:0.0.0.0}"/>
             </interface>
         </interfaces>
-
         <socket-bindings default-interface="public" port-offset="${infinispan.socket.binding.port-offset:0}">
             <socket-binding name="default" port="${infinispan.bind.port:11222}"/>
             <socket-binding name="memcached" port="11221"/>
         </socket-bindings>
 
-        <security>
-            <credential-stores>
-                <credential-store name="credentials" path="credentials.pfx">
-                    <clear-text-credential clear-text="secret"/>
-                </credential-store>
-            </credential-stores>
-            <security-realms>
-                <security-realm name="default">
-                    <!-- Uncomment to enable TLS on the realm -->
-                    <!-- server-identities>
-                       <ssl>
-                          <keystore path="application.keystore"
-                                    password="password" alias="server"
-                                    generate-self-signed-certificate-host="localhost"/>
-                       </ssl>
-                    </server-identities-->
-                    <properties-realm groups-attribute="Roles">
-                        <user-properties path="users.properties"/>
-                        <group-properties path="groups.properties"/>
-                    </properties-realm>
-                </security-realm>
-            </security-realms>
-        </security>
-
-        <endpoints socket-binding="default" security-realm="default" >
-            <!-- TODO configure additional authentication
-            <hotrod-connector name="hotrod" >
-            </hotrod-connector>
-            <rest-connector name="rest"/>
-            -->
-        </endpoints>
+        <endpoints socket-binding="default"/>
     </server>
 </infinispan>
