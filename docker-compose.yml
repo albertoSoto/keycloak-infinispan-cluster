@@ -65,6 +65,7 @@ services:
       dockerfile: Dockerfile
       args:
         INFINISPAN_VERSION: ${INFINISPAN_VERSION:-13.0.6.Final}
+        KEYCLOAK_VERSION: ${KEYCLOAK_VERSION:-17.0.0}
     networks:
       - ispan_net
     ports:
