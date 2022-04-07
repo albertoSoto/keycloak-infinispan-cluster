@@ -26,8 +26,8 @@ services:
     networks:
       - ispan_net
     volumes:
-      - ./keycloak/realm.json:/realm.json
-      #      - ./keycloak/development-realm/vi-realm-zero-realm.json:/realm.json
+      #- ./keycloak/realm.json:/realm.json
+      - ./keycloak/development-realm/vi-realm-zero-realm.json:/realm.json
       - ./keycloak/password-blacklists/password_blacklist.txt:/opt/jboss/keycloak/standalone/data/password-blacklists/password-blacklists.txt
       - ./keycloak/cli/startup.cli:/opt/jboss/startup-scripts/startup.cli
     environment:
@@ -75,12 +75,15 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-    volumes:
-      - ./data/infinispan-1:/opt/infinispan/server/mydata:z
+#    volumes:
+#      - ./data/infinispan-1:/opt/infinispan/server/mydata:z
     environment:
       - INFINISPAN_CACHE_STATISTICS=true
       - USER=admin
       - PASS=admin
+      - MYSQL_DATABASE=${DB_DATABASE:-keycloak}
+      - MYSQL_USER=${DB_USER:-keycloak}
+      - MYSQL_PASSWORD=${DB_PASS:-password}
       #IDENTITIES_PATH="/user-config/identities.yaml"
       #CONFIG_PATH="/user-config/config.yaml"
   mysql:
@@ -89,8 +92,8 @@ services:
     restart: always
     ports:
       - "3307:3306"
-    volumes:
-      - ./data:/custom/exports
+#    volumes:
+#      - ./data/db:/custom/exports
     environment:
       - MYSQL_DATABASE=${DB_DATABASE:-keycloak}
       - MYSQL_USER=${DB_USER:-keycloak}

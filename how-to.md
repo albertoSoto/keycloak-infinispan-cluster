@@ -48,3 +48,7 @@ https://infinispan.org/infinispan-server-tutorial/
 https://github.com/infinispan/infinispan-server-tutorial
 https://github.com/infinispan/infinispan-simple-tutorials
 https://kazuhira-r.hatenablog.com/entry/2021/07/11/000438
+
+
+# Infinispan mysql gist
+https://gist.github.com/bsingr/a33bc0336522329d4f163efbf0fafe05
