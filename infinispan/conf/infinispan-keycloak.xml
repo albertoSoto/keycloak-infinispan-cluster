@@ -14,9 +14,17 @@
             <!--            <context-initializer>    <class></class>     </context-initializer>-->
             <allow-list>
                 <!-- it can´t find the class from KC -->
-                <class>org.keycloak.models.sessions.infinispan.changes.SessionEntityWrapper</class>
+<!--                <class>org.keycloak.models.sessions.infinispan.changes.SessionEntityWrapper</class>-->
                 <class>java.util.UUID</class>
-                <!--   <regex>org.keycloak.models.sessions.infinispan.*</regex>-->
+                <regex>org.keycloak.models.sessions.infinispan.*</regex>
+            </allow-list>
+        </serialization>
+        <serialization marshaller="org.infinispan.commons.marshall.JavaSerializationMarshaller">
+            <allow-list>
+                <!-- it can´t find the class from KC -->
+<!--                <class>org.keycloak.models.sessions.infinispan.changes.SessionEntityWrapper</class>-->
+                <class>java.util.UUID</class>
+                <regex>org.keycloak.models.sessions.infinispan.*</regex>
             </allow-list>
         </serialization>
         <transport cluster="${infinispan.cluster.name:cluster}" stack="${infinispan.cluster.stack:jgroups}"
@@ -46,8 +54,11 @@
             <expiration lifespan="900000000000000000"/>
             <!--Driver fails
             https://medium.com/@hasnat.saeed/install-and-configure-mysql-jdbc-driver-on-jboss-wildfly-e751a3be60d3
+            https://infinispan.zulipchat.com/#narrow/stream/118645-infinispan/topic/.E2.9C.94.20mysql.20persistence.20with.20infinispan.2013.2E0
+            https://infinispan.org/docs/11.0.x/titles/server/server.html#datasources
+            https://infinispan.org/docs/13.0.x/titles/server/server.html#configuring-server-datasources_managed-datasources
             -->
-<!--            <persistence>
+          <!--  <persistence>
                 <string-keyed-jdbc-store shared="true" xmlns="urn:infinispan:config:store:jdbc:13.0">
                     <connection-pool
                             connection-url="jdbc:mysql://localhost:3307/${env.MYSQL_DATABASE:infinispan}"
