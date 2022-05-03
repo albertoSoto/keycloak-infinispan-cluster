@@ -58,21 +58,21 @@
             https://infinispan.org/docs/11.0.x/titles/server/server.html#datasources
             https://infinispan.org/docs/13.0.x/titles/server/server.html#configuring-server-datasources_managed-datasources
             -->
-          <!--  <persistence>
+            <persistence>
                 <string-keyed-jdbc-store shared="true" xmlns="urn:infinispan:config:store:jdbc:13.0">
                     <connection-pool
-                            connection-url="jdbc:mysql://localhost:3307/${env.MYSQL_DATABASE:infinispan}"
-                            driver="com.mysql.cj.jdbc.Driver" password="${env.MYSQL_USER:root}"
-                            username="${env.MYSQL_PASSWORD:root}"/>
+                            connection-url="jdbc:mysql://${env.DB_ADDR:mysql}:${env.DB_PORT:3306}/${env.DB_DATABASE:infinispan}"
+                            driver="com.mysql.cj.jdbc.Driver" password="${env.DB_PASSWORD:root}"
+                            username="${env.DB_USER:root}"/>
                     <string-keyed-table drop-on-exit="false"
-                                        prefix="ISPN_STRING_TABLE">
+                                        prefix="ISPN">
                         <id-column name="ID_COLUMN" type="VARCHAR(255)" />
-                        <data-column name="DATA_COLUMN" type="VARBINARY(1000)" />
+                        <data-column name="DATA_COLUMN" type="VARBINARY(2000)" />
                         <timestamp-column name="TIMESTAMP_COLUMN" type="BIGINT" />
                         <segment-column name="SEGMENT_COLUMN" type="INT" />
                     </string-keyed-table>
                 </string-keyed-jdbc-store>
-            </persistence>-->
+            </persistence>
             <state-transfer timeout="${infinispan.statetransfer.timeout:600000}" />
         </distributed-cache-configuration>
         <!--https://infinispan.org/docs/stable/titles/configuring/configuring.html#replicated-caches_clustered-caches-->

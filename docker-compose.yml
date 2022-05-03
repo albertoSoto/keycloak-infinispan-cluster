@@ -66,6 +66,8 @@ services:
       args:
         INFINISPAN_VERSION: ${INFINISPAN_VERSION:-13.0.6.Final}
         KEYCLOAK_VERSION: ${KEYCLOAK_VERSION:-17.0.0}
+    depends_on:
+      - mysql
     networks:
       - ispan_net
     ports:
@@ -81,9 +83,11 @@ services:
       - INFINISPAN_CACHE_STATISTICS=true
       - USER=admin
       - PASS=admin
-      - MYSQL_DATABASE=${DB_DATABASE:-keycloak}
-      - MYSQL_USER=${DB_USER:-keycloak}
-      - MYSQL_PASSWORD=${DB_PASS:-password}
+      - DB_ADDR=mysql
+      - DB_PORT=3306
+      - DB_USER=keycloak
+      - DB_PASSWORD=password
+      - DB_DATABASE=infinispan
       #IDENTITIES_PATH="/user-config/identities.yaml"
       #CONFIG_PATH="/user-config/config.yaml"
   mysql:
@@ -92,8 +96,8 @@ services:
     restart: always
     ports:
       - "3307:3306"
-#    volumes:
-#      - ./data/db:/custom/exports
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d
     environment:
       - MYSQL_DATABASE=${DB_DATABASE:-keycloak}
       - MYSQL_USER=${DB_USER:-keycloak}
